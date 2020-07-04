@@ -19,8 +19,5 @@ node{
         
          sh label: '', script: '''docker push chetankumarpatel/my-app:1.1  '''
     }
-    stage('Run Docker container on Local host/Dev'){
-        sh label: '', script: '''docker run -d -it --name myapp -p 8017:80 chetankumarpatel/my-app:1.1 '''
-        
-    }
+    
 }
