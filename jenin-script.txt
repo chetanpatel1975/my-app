@@ -1,0 +1,26 @@
+node{
+    
+    stage('SCM Checkout'){
+       git credentialsId: 'git-credential', url: 'https://github.com/chetanpatel1975/my-app' 
+    }
+    stage('Mvn Package'){
+        def mvnHome = tool name: 'maven-3', type: 'maven'
+        def mvnCMD = "${mvnHome}/bin/mvn"
+        sh label: '', script: "${mvnCMD} clean package"
+        
+    }
+    stage('Build Docker image'){
+        sh label: '', script: '''docker build -t chetankumarpatel/my-app:1.1 . '''
+    }
+    stage('Push docker Image to Docker Hub'){
+        withCredentials([string(credentialsId: 'DockerPwd', variable: 'dockerPwd')]) {
+        sh label: '', script: "docker login -u chetankumarpatel -p ${dockerPwd}"
+    }
+        
+         sh label: '', script: '''docker push chetankumarpatel/my-app:1.1  '''
+    }
+    stage('Run Docker container on Local host/Dev'){
+        sh label: '', script: '''docker run -d -it --name myapp -p 8017:80 chetankumarpatel/my-app:1.1 '''
+        
+    }
+}
